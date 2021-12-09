@@ -1,0 +1,11 @@
+wheel
+numpy
+scipy
+pandas
+matplotlib
+opencv-python
+pillow
+pytube
+sympy
+netCDF4
+plotly

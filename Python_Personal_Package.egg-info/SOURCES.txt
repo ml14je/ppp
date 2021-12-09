@@ -1,0 +1,7 @@
+setup.py
+Python_Personal_Package.egg-info/PKG-INFO
+Python_Personal_Package.egg-info/SOURCES.txt
+Python_Personal_Package.egg-info/dependency_links.txt
+Python_Personal_Package.egg-info/not-zip-safe
+Python_Personal_Package.egg-info/requires.txt
+Python_Personal_Package.egg-info/top_level.txt
