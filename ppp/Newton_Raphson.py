@@ -10,7 +10,7 @@ Python 3.7 : Tue Nov  5 10:18:14 2019
 import numpy as np
 
 def newton_raphson(f, init_val, sup_output=True, max_iteration=250,
-                   tolerance=1E-16, eps=1E-8):
+                   tolerance=1e-14, eps=1E-8):
     """
     Newton--Raphson method which utilises the Secant-Method to
     approximate the derivative of function f. The result should return the
@@ -35,16 +35,15 @@ def newton_raphson(f, init_val, sup_output=True, max_iteration=250,
     error, iteration = abs(F), 1
     val = init_val
     v0 = init_val
-
-
-    while True:
+    
+    while error > tolerance:
         f_prime = (f(val+eps/2)-f(val-eps/2))/eps
         val -= F/f_prime
         F = f(val)
         error = abs(F)
 
         if error < tolerance:
-            return val
+            continue
 
         # print(val, v0, error)
         iteration +=1

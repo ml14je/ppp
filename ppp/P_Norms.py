@@ -30,7 +30,7 @@ def p2_norm(v):
         The vector on which to perform the p-2 norm.
     """
     import numpy as np
-    return np.sqrt(np.matmul(v, v))
+    return np.sqrt(v.T @ v.conjugate()).real[0, 0]
 
 def pInf_norm(v):
     """

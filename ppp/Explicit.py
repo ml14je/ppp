@@ -10,24 +10,27 @@ Created on Tue Aug 25 15:48:15 2020
 import numpy as np
 
 class explicit(object):
-    def __init__(self, function, y_0, t_0, t_N, N=100, method='Heun'):
+    def __init__(self, function, y_0, t_0, t_N, N=100, method='Heun',
+                 nt=10, verbose=True):
         self.func = function
         self.t_0, self.t_N, self.y_0 = t_0, t_N, np.copy(y_0)
         self.N = N
         self.dt = (self.t_N - self.t_0)/self.N
+        self.nt = N//nt
+        self.nnt = nt
 
         self.t_vals = np.linspace(self.t_0, self.t_N, self.N + 1)
 
         try:
             if len(y_0.shape) == 2 and y_0.shape[1] == 1:
-                self.y_vals = np.zeros((self.N+1, y_0.shape[0], 1), dtype=complex)
+                self.y_vals = np.zeros((self.nt+1, y_0.shape[0], 1), dtype=complex)
                 self.y_vals[0] = y_0
             else:
-                self.y_vals = np.zeros((self.N+1, y_0), dtype=complex)
+                self.y_vals = np.zeros((self.nt+1, len(y_0)), dtype=complex)
                 self.y_vals[0] = y_0
 
         except AttributeError:
-            self.y_vals = np.zeros(self.N+1)
+            self.y_vals = np.zeros(self.nt+1)
             self.y_vals[0] = y_0
 
         if method == 'Forward Euler':
@@ -74,7 +77,12 @@ class explicit(object):
         for k, t in enumerate(self.t_vals[:-1]):
             dy = self.method(self.func, t, y, self.dt)
             y += dy
-            self.y_vals[k+1] = y
+            if (k +1) % 50 == 0:
+                print(k, np.max(abs(y)), t)
+            
+            if (k+1) % self.nnt == 0:
+                print(k, self.nnt)
+                self.y_vals[k+1] = y
 
     def interpolate(self, t_vals,  method='linear'):
         from scipy.interpolate import interp1d
@@ -198,32 +206,14 @@ def test(func, exact, t0, tN, y0):
 
 if __name__ == '__main__':
     # Scalar Example
-    # t_0, t_N, y_0 = 2, 3, 1.0
-    # function = lambda t, y : 1 + (t - y)**2
-    # exact = lambda t : t + 1/(1-t)
-
-    t_0, t_N, y_0 = 0, 10, 10.0
-    k = 2
-    function = lambda t, C : k * C + t
-    exact = lambda t : y_0 * np.exp(k * t)
-    ode = explicit(function, y_0, t_0, t_N, N=100, method='Heun')
-
-
-
-
-    time = np.linspace(t_0, t_N, 101)
-    import matplotlib.pyplot as pt
-    pt.plot(time, exact(time), 'r')
-    pt.plot(ode.t_vals, ode.y_vals, 'k:')
-    pt.show()
-
-
-
+    t_0, t_N, y_0 = 2, 3, 1.0
+    function = lambda t, y : 1 + (t - y)**2
+    exact = lambda t : t + 1/(1-t)
+    test(function, exact, t_0, t_N, y_0)
 
     # Linear System of ODEs
-    # t_0, t_N = 0, 2*np.pi
-    # y_0 = np.array([[1.0], [0.0]])
-    # function = lambda t, y : np.array([[0.0, -1.0], [1.0, 0.0]]) @ y
-    # exact = lambda t : np.array([[np.cos(t)], [np.sin(t)]])
-
-    # test(function, exact, t_0, t_N, y_0)
+    t_0, t_N = 0, 2*np.pi
+    y_0 = np.array([[1.0], [0.0]])
+    function = lambda t, y : np.array([[0.0, -1.0], [1.0, 0.0]]) @ y
+    exact = lambda t : np.array([[np.cos(t)], [np.sin(t)]])
+    test(function, exact, t_0, t_N, y_0)

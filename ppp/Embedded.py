@@ -60,8 +60,7 @@ class embedded(object):
         self.reject = False
         self.err_old = self.rtol
         self.sgn = abs(self.htry)/self.htry
-        # print(sgn, x)
-        # print(x, self.x_N)
+
         while (k < self.n_max) or (self.sgn*t < self.sgn*self.t_N):
             self.h = self.htry
             while True:
@@ -88,11 +87,9 @@ class embedded(object):
                 from ppp.FD_Weights import weights
                 w = weights(self.t_N, t_vals[-4:], 0)
                 ys = np.array(y_vals[-4:])
-                # print(w.T.shape, ys.shape)
-
 
                 t_vals[-1], y_vals[-1] = self.t_N, (w.T @ ys)[0]
-                # print(self.sgn*t, self.sgn*self.t_N)
+                
                 break
 
         self.t_vals, self.y_vals = np.array(t_vals), np.array(y_vals)

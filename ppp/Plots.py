@@ -7,10 +7,12 @@ University of Leeds : Leeds LS2 9JT : ml14je@leeds.ac.uk
 Python 3.7 : Tue Nov  5 10:33:21 2019
 """
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as pt
 
 def plot_setup(x_label='', y_label='', x_log=False, y_log=False, bx=10, by=10,
-               y_rev=False, scale=1, title='', my_dpi=100, project=None):
+               y_rev=False, scale=1, title='', my_dpi=100, project=None,
+               colour_scheme='seaborn-colorblind'):
     """
     Sets up figure environment.
 
@@ -38,9 +40,9 @@ def plot_setup(x_label='', y_label='', x_log=False, y_log=False, bx=10, by=10,
     """
     import matplotlib.pyplot as pt
     import matplotlib as mpl
-
-    mpl.style.use('seaborn-colorblind')
-
+    
+    
+    mpl.style.use(colour_scheme)
     fig, ax = pt.subplots(figsize=(13.68*scale, 7.68*scale),
                           dpi=my_dpi)
     set_axis(ax, x_label, y_label, x_log, y_log, bx, by,
@@ -52,12 +54,12 @@ def set_axis(ax, x_label='', y_label='', x_log=False, y_log=False, bx=10, by=10,
                y_rev=False, scale=1, title=''):
     import matplotlib.pyplot as pt
     pt.gca()
-    ax.tick_params(axis="x", labelsize=16*scale)
-    ax.tick_params(axis="y", labelsize=16*scale)
+    ax.tick_params(axis="x", labelsize=16)
+    ax.tick_params(axis="y", labelsize=16)
 
-    ax.set_xlabel(x_label, fontsize=scale*20)
-    ax.set_ylabel(y_label, fontsize=scale*20)
-    ax.set_title(title, fontsize=scale*22)
+    ax.set_xlabel(x_label, fontsize=20)
+    ax.set_ylabel(y_label, fontsize=20)
+    ax.set_title(title, fontsize=22)
     if x_log: ax.set_xscale('log', base=bx)
     if y_log: ax.set_yscale('log', base=by)
     # print(y_rev)
@@ -65,13 +67,10 @@ def set_axis(ax, x_label='', y_label='', x_log=False, y_log=False, bx=10, by=10,
     ax.grid(linewidth=0.5)
 
 def save_plot(fig, ax, file_name, folder_name=None, wd=None, my_dpi=100,
-              my_loc='best', give_legend=True):
+              my_loc='best', give_legend=True, labels=None,
+              override_check=False):
     import os
-
-    if __name__ == '__main__':
-        from File_Management import dir_assurer, file_exist
-    else:
-        from ppp.File_Management import dir_assurer, file_exist
+    from ppp.File_Management import dir_assurer, file_exist
 
     if not wd: wd = os.getcwd()
 
@@ -83,12 +82,15 @@ def save_plot(fig, ax, file_name, folder_name=None, wd=None, my_dpi=100,
     def save(handles=None):
         if give_legend:
             try:
-                handles, labels = ax.get_legend_handles_labels()
+                handles, labels2 = ax.get_legend_handles_labels()
 
             except:
                 AttributeError
 
-            if handles: ax.legend(fontsize=16, loc=my_loc)
+            if labels:
+                ax.legend(labels, fontsize=16, loc=my_loc)
+
+            elif handles: ax.legend(fontsize=16, loc=my_loc)
 
         fig.savefig(os.path.join(
                 wd, os.path.join(
@@ -103,11 +105,16 @@ def save_plot(fig, ax, file_name, folder_name=None, wd=None, my_dpi=100,
     else:
         folder_name = ''
 
-    file_name = replace_all(
-            file_name, {'\\' : '', '$' : '', ' ' : '_', ',' : '', '.' : ','}
-            )
+    # file_name = replace_all(
+    #         file_name, {'\\' : '', '$' : '', ' ' : '_', ',' : '', '.' : ','}
+    #         )
 
     file_name += '.png'
+    
+    if not override_check:
+        save()
+        return
+
     if not file_exist(file_name, folder_name, wd):
         save()
 
