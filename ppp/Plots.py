@@ -44,7 +44,7 @@ def plot_setup(x_label='', y_label='', x_log=False, y_log=False, bx=10, by=10,
     
     mpl.style.use(colour_scheme)
     fig, ax = pt.subplots(figsize=(13.68*scale, 7.68*scale),
-                          dpi=my_dpi)
+                          dpi=my_dpi, tight_layout=True)
     set_axis(ax, x_label, y_label, x_log, y_log, bx, by,
                y_rev, scale, title)
 
@@ -195,6 +195,24 @@ def subplots(rows, cols, scale=1, x_share=False, y_share=False, my_dpi=100):
     fig, axis = pt.subplots(rows, cols, figsize=(13.68*scale, 7.68*scale),
                           dpi=my_dpi, sharex=x_share, sharey=y_share)
     return fig, axis
+
+
+
+def add_colorbar(im, aspect=20, pad_fraction=0.5, **kwargs):    
+    """
+    Add a vertical color bar to an image plot.
+    Source: https://stackoverflow.com/questions/18195758/set-matplotlib-colorbar-size-to-match-graph
+    """
+    
+    import matplotlib.pyplot as plt
+    from mpl_toolkits import axes_grid1
+    divider = axes_grid1.make_axes_locatable(im.axes)
+    width = axes_grid1.axes_size.AxesY(im.axes, aspect=1./aspect)
+    pad = axes_grid1.axes_size.Fraction(pad_fraction, width)
+    current_ax = plt.gca()
+    cax = divider.append_axes("right", size=width, pad=pad)
+    plt.sca(current_ax)
+    return im.axes.figure.colorbar(im, cax=cax, **kwargs)
 
 if __name__=='__main__':
     x_arr = np.linspace(0, 2*np.pi, 100)
